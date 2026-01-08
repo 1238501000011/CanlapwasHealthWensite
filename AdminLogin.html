@@ -145,6 +145,18 @@
             border-radius: 12px;
             font-size: 1rem;
             transition: all 0.3s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            touch-action: manipulation;
+            min-height: 48px; /* Minimum touch target size for mobile */
+            box-sizing: border-box;
+            width: 100%;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         .form-group input:focus {
@@ -164,6 +176,15 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 0.5rem;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            min-height: 48px; /* Minimum touch target size for mobile */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
         .login-button:hover {
@@ -173,12 +194,14 @@
 
         .login-button:active {
             transform: translateY(0);
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
         }
 
         .login-button:disabled {
             opacity: 0.7;
             cursor: not-allowed;
             transform: none;
+            pointer-events: none;
         }
 
         .login-button .button-spinner {
@@ -348,12 +371,12 @@
         <form class="login-form" id="adminLoginForm">
             <div class="form-group">
                 <label for="adminEmail">Admin Email</label>
-                <input type="email" id="adminEmail" name="email" placeholder="Enter admin email" required>
+                <input type="email" id="adminEmail" name="email" placeholder="Enter admin email" autocomplete="email" inputmode="email" required>
             </div>
 
             <div class="form-group">
                 <label for="adminPassword">Password</label>
-                <input type="password" id="adminPassword" name="password" placeholder="Enter admin password" required>
+                <input type="password" id="adminPassword" name="password" placeholder="Enter admin password" autocomplete="current-password" required>
             </div>
 
             <button type="submit" class="login-button" id="adminLoginButton">

@@ -108,6 +108,7 @@ function createNotificationPanel() {
     top: 70px;
     right: 20px;
     width: 380px;
+    max-width: calc(100vw - 40px);
     max-height: 500px;
     background: white;
     border-radius: 12px;
@@ -118,6 +119,41 @@ function createNotificationPanel() {
     overflow: hidden;
     border: 1px solid #e5e7eb;
   `;
+  
+  // Add responsive styles via media query
+  const style = document.createElement('style');
+  style.textContent = `
+    @media (max-width: 768px) {
+      #notification-panel {
+        top: 60px !important;
+        right: 10px !important;
+        left: 10px !important;
+        width: auto !important;
+        max-width: calc(100vw - 20px) !important;
+        max-height: calc(100vh - 80px) !important;
+      }
+      
+      #notification-icon-container {
+        margin-left: 0.5rem !important;
+      }
+      
+      #notification-icon-container svg {
+        width: 20px !important;
+        height: 20px !important;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      #notification-panel {
+        top: 55px !important;
+        right: 5px !important;
+        left: 5px !important;
+        max-width: calc(100vw - 10px) !important;
+        border-radius: 8px !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
   
   notificationPanel.innerHTML = `
     <div style="padding: 1.25rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background: #f9fafb;">

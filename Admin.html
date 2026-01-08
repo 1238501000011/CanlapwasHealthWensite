@@ -391,27 +391,159 @@
             font-weight: 500;
         }
 
+        /* Mobile Menu Toggle for Admin */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #1f2937;
+            padding: 0.5rem;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+        }
+
+        /* Responsive Design */
         @media (max-width: 1024px) {
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+
+            .panels-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
             .layout {
                 flex-direction: column;
             }
 
             .sidebar {
                 width: 100%;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                padding: 1.5rem 2rem;
+                padding: 1.5rem 1rem;
+                position: relative;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
             }
 
             .sidebar-nav {
-                flex-direction: row;
-                align-items: center;
-                gap: 1rem;
+                display: none;
+                flex-direction: column;
+                gap: 0.75rem;
+                margin-top: 1rem;
+                width: 100%;
+            }
+
+            .sidebar-nav.active {
+                display: flex;
+            }
+
+            .nav-link {
+                width: 100%;
+                justify-content: flex-start;
             }
 
             .back-link {
-                margin-top: 0;
+                margin-top: 1rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .content-header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.25rem 1rem;
+            }
+
+            .stat-title {
+                font-size: 0.95rem;
+            }
+
+            .stat-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .panels-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+
+            .panel {
+                padding: 1.5rem 1.25rem;
+            }
+
+            .panel-title h2 {
+                font-size: 1.1rem;
+            }
+
+            .notification-panel {
+                padding: 1.5rem 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                padding: 1rem 0.75rem;
+            }
+
+            .logo-text span {
+                font-size: 0.9rem;
+            }
+
+            .logo-circle {
+                width: 40px;
+                height: 40px;
+            }
+
+            .content {
+                padding: 1rem 0.75rem;
+            }
+
+            .content-header h1 {
+                font-size: 1.75rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card h3 {
+                font-size: 1.5rem;
+            }
+
+            .panel {
+                padding: 1.25rem 1rem;
+            }
+
+            #notification-title,
+            #notification-message {
+                font-size: 0.9rem;
+                padding: 0.625rem;
+            }
+
+            #send-notification-btn {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -419,10 +551,15 @@
 <body>
     <div class="layout">
         <aside class="sidebar">
+            <button class="mobile-menu-toggle" id="adminMobileMenuToggle" aria-label="Toggle menu">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
             <div class="sidebar-logo">
                 <div class="logo-badge">
                     <div class="logo-circle">
-                        <img src="image/Logohub.png" alt="Health Hub Logo" onerror="this.style.display='none';">
+                        <img src="Image/Logohub.png" alt="Health Hub Logo" onerror="this.style.display='none';">
                     </div>
                     <div class="logo-text">
                         <span>Health Hub</span>
@@ -431,7 +568,7 @@
                 </div>
             </div>
 
-            <nav class="sidebar-nav">
+            <nav class="sidebar-nav" id="adminSidebarNav">
                 <a href="AdminLogin.html" class="nav-link active">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 11.5L12 3l9 8.5" />
@@ -999,6 +1136,33 @@
             });
         }
         
+        // Mobile menu toggle for admin sidebar
+        document.addEventListener('DOMContentLoaded', function() {
+            const adminMobileMenuToggle = document.getElementById('adminMobileMenuToggle');
+            const adminSidebarNav = document.getElementById('adminSidebarNav');
+            
+            if (adminMobileMenuToggle && adminSidebarNav) {
+                adminMobileMenuToggle.addEventListener('click', function() {
+                    adminSidebarNav.classList.toggle('active');
+                });
+                
+                // Close menu when clicking on a link
+                const navLinks = adminSidebarNav.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        adminSidebarNav.classList.remove('active');
+                    });
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!adminSidebarNav.contains(event.target) && !adminMobileMenuToggle.contains(event.target)) {
+                        adminSidebarNav.classList.remove('active');
+                    }
+                });
+            }
+        });
+
         // Function to show notification status
         function showNotificationStatus(message, type) {
             const statusDiv = document.getElementById('notification-status');

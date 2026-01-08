@@ -180,6 +180,74 @@
         .login-button:active {
             transform: translateY(0);
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .confirmation-container {
+                padding: 2rem 1.5rem;
+                max-width: 100%;
+            }
+
+            .logo-text {
+                font-size: 1.5rem;
+            }
+
+            .logo-circle {
+                width: 50px;
+                height: 50px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .message {
+                font-size: 0.95rem;
+            }
+
+            .icon-container {
+                width: 60px;
+                height: 60px;
+            }
+
+            .icon-container svg {
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .confirmation-container {
+                padding: 1.5rem 1rem;
+                border-radius: 16px;
+            }
+
+            .logo-text {
+                font-size: 1.25rem;
+            }
+
+            .logo-circle {
+                width: 45px;
+                height: 45px;
+            }
+
+            h1 {
+                font-size: 1.25rem;
+            }
+
+            .message {
+                font-size: 0.9rem;
+            }
+
+            .login-button {
+                width: 100%;
+                padding: 0.75rem 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>

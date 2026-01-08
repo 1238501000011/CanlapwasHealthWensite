@@ -127,18 +127,55 @@
             font-size: 0.95rem;
         }
 
+        .form-group {
+            position: relative;
+        }
+
         .form-group input {
             padding: 0.9rem 1.2rem;
+            padding-right: 3rem;
             border: 2px solid #e5e7eb;
             border-radius: 12px;
             font-size: 1rem;
             transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .form-group input:focus {
             outline: none;
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: calc(1.5rem + 0.5rem + 0.9rem + 0.5rem); /* label height + gap + input padding top + half icon height for centering */
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 1.2rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+            z-index: 10;
+            width: 1.5rem;
+            height: 1.5rem;
+            line-height: 1;
+        }
+
+        .password-toggle:hover {
+            color: #2563eb;
+        }
+
+        .password-toggle:focus {
+            outline: none;
+            color: #2563eb;
         }
 
         .login-button {
@@ -293,7 +330,14 @@
 
             .form-group input {
                 padding: 0.875rem 1rem;
+                padding-right: 2.5rem;
                 font-size: 0.95rem;
+            }
+
+            .password-toggle {
+                right: 0.75rem;
+                font-size: 1.1rem;
+                top: calc(1.5rem + 0.5rem + 0.875rem + 0.5rem);
             }
 
             .login-button {
@@ -333,7 +377,14 @@
 
             .form-group input {
                 padding: 0.75rem 0.875rem;
+                padding-right: 2.5rem;
                 font-size: 0.9rem;
+            }
+
+            .password-toggle {
+                right: 0.5rem;
+                font-size: 1rem;
+                top: calc(1.5rem + 0.5rem + 0.75rem + 0.5rem);
             }
 
             .login-button {
@@ -375,6 +426,9 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password visibility">
+                    <span id="passwordToggleIcon">👁️</span>
+                </button>
             </div>
 
             <button type="submit" class="login-button" id="loginButton">
@@ -432,11 +486,17 @@
                 <div class="form-group">
                     <label for="registerPassword">Password</label>
                     <input type="password" id="registerPassword" name="password" placeholder="Create a password" required>
+                    <button type="button" class="password-toggle" id="toggleRegisterPassword" aria-label="Toggle password visibility">
+                        <span id="registerPasswordToggleIcon">👁️</span>
+                    </button>
                 </div>
                 
                 <div class="form-group">
                     <label for="registerConfirmPassword">Confirm Password</label>
                     <input type="password" id="registerConfirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                    <button type="button" class="password-toggle" id="toggleRegisterConfirmPassword" aria-label="Toggle password visibility">
+                        <span id="registerConfirmPasswordToggleIcon">👁️</span>
+                    </button>
                 </div>
 
                 <button type="submit" class="login-button" id="registerButton">
@@ -451,6 +511,48 @@
     <script type="module">
         import { supabase } from './js/supabaseClient.js';
         import './js/login.js';
+
+        // Password visibility toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Login password toggle
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const passwordToggleIcon = document.getElementById('passwordToggleIcon');
+
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    passwordToggleIcon.textContent = type === 'password' ? '👁️' : '🙈';
+                });
+            }
+
+            // Register password toggle
+            const toggleRegisterPassword = document.getElementById('toggleRegisterPassword');
+            const registerPasswordInput = document.getElementById('registerPassword');
+            const registerPasswordToggleIcon = document.getElementById('registerPasswordToggleIcon');
+
+            if (toggleRegisterPassword && registerPasswordInput) {
+                toggleRegisterPassword.addEventListener('click', function() {
+                    const type = registerPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    registerPasswordInput.setAttribute('type', type);
+                    registerPasswordToggleIcon.textContent = type === 'password' ? '👁️' : '🙈';
+                });
+            }
+
+            // Register confirm password toggle
+            const toggleRegisterConfirmPassword = document.getElementById('toggleRegisterConfirmPassword');
+            const registerConfirmPasswordInput = document.getElementById('registerConfirmPassword');
+            const registerConfirmPasswordToggleIcon = document.getElementById('registerConfirmPasswordToggleIcon');
+
+            if (toggleRegisterConfirmPassword && registerConfirmPasswordInput) {
+                toggleRegisterConfirmPassword.addEventListener('click', function() {
+                    const type = registerConfirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    registerConfirmPasswordInput.setAttribute('type', type);
+                    registerConfirmPasswordToggleIcon.textContent = type === 'password' ? '👁️' : '🙈';
+                });
+            }
+        });
     </script>
 </body>
 </html>

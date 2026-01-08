@@ -300,9 +300,42 @@
             const errorMessage = document.getElementById('errorMessage');
 
             try {
-                // Supabase automatically processes the email confirmation token from the URL hash
-                // The session is automatically created when the user clicks the confirmation link
-                // We just need to check if we have a valid session
+                // Check URL hash for Supabase confirmation tokens
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const accessToken = hashParams.get('access_token');
+                const refreshToken = hashParams.get('refresh_token');
+                const type = hashParams.get('type');
+                const error = hashParams.get('error');
+                const errorDescription = hashParams.get('error_description');
+
+                // Check for errors in URL
+                if (error) {
+                    throw new Error(errorDescription || error || 'Email confirmation failed');
+                }
+
+                // If we have tokens in the URL, Supabase needs to process them
+                if (type === 'signup' || type === 'email' || type === 'recovery') {
+                    if (accessToken && refreshToken) {
+                        // Set the session using the tokens from URL
+                        const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+                            access_token: accessToken,
+                            refresh_token: refreshToken
+                        });
+
+                        if (sessionError) {
+                            throw sessionError;
+                        }
+
+                        // Wait a moment for Supabase to process
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    } else if (accessToken) {
+                        // Try to exchange the access token for a session
+                        // Supabase should handle this automatically, but wait a bit
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+                }
+
+                // Check for session after processing URL tokens
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
                 if (sessionError) {
@@ -328,44 +361,26 @@
                             await supabase.auth.signOut();
                         }, 2000);
                     } else {
-                        // Email not confirmed yet
-                        throw new Error('Email confirmation is still pending');
-                    }
-                } else {
-                    // No session found - check URL parameters
-                    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                    const accessToken = hashParams.get('access_token');
-                    const type = hashParams.get('type');
-
-                    if (type === 'signup' && accessToken) {
-                        // The token is in the URL, Supabase should have processed it
-                        // Wait a moment and check again
+                        // Email not confirmed yet - wait a bit more and check again
                         await new Promise(resolve => setTimeout(resolve, 1000));
+                        const { data: { user: updatedUser } } = await supabase.auth.getUser();
                         
-                        const { data: { session: newSession }, error: newError } = await supabase.auth.getSession();
-                        
-                        if (newError || !newSession) {
-                            throw new Error('Unable to verify email. The link may be invalid or expired.');
-                        }
-
-                        const { data: { user }, error: userError } = await supabase.auth.getUser();
-                        
-                        if (userError) {
-                            throw userError;
-                        }
-
-                        if (user && (user.email_confirmed_at || user.confirmed_at)) {
+                        if (updatedUser && (updatedUser.email_confirmed_at || updatedUser.confirmed_at)) {
                             loadingState.style.display = 'none';
                             successState.style.display = 'block';
-                            
                             setTimeout(async () => {
                                 await supabase.auth.signOut();
                             }, 2000);
                         } else {
-                            throw new Error('Email confirmation is still pending');
+                            throw new Error('Email confirmation is still pending. Please try clicking the link again.');
                         }
+                    }
+                } else {
+                    // No session found - check if we have URL parameters but no session
+                    if (accessToken) {
+                        throw new Error('Unable to verify email. The link may be invalid or expired. Please try registering again.');
                     } else {
-                        throw new Error('Invalid confirmation link');
+                        throw new Error('Invalid confirmation link. Please check your email for the correct verification link.');
                     }
                 }
             } catch (error) {

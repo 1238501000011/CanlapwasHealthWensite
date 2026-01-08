@@ -139,8 +139,13 @@
             font-size: 0.95rem;
         }
 
+        .form-group {
+            position: relative;
+        }
+
         .form-group input {
             padding: 0.9rem 1.2rem;
+            padding-right: 3rem;
             border: 2px solid #e5e7eb;
             border-radius: 12px;
             font-size: 1rem;
@@ -157,6 +162,38 @@
             outline: none;
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: calc(1.5rem + 0.5rem + 0.9rem + 0.5rem); /* label height + gap + input padding top + half icon height for centering */
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 1.2rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+            z-index: 10;
+            width: 1.5rem;
+            height: 1.5rem;
+            line-height: 1;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .password-toggle:hover {
+            color: #2563eb;
+        }
+
+        .password-toggle:focus {
+            outline: none;
+            color: #2563eb;
         }
 
         .form-group input:focus {
@@ -296,7 +333,14 @@
 
             .form-group input {
                 padding: 0.875rem 1rem;
+                padding-right: 2.5rem;
                 font-size: 0.95rem;
+            }
+
+            .password-toggle {
+                right: 0.75rem;
+                font-size: 1.1rem;
+                top: calc(1.5rem + 0.5rem + 0.875rem + 0.5rem);
             }
 
             .login-button {
@@ -335,7 +379,14 @@
 
             .form-group input {
                 padding: 0.75rem 0.875rem;
+                padding-right: 2.5rem;
                 font-size: 0.9rem;
+            }
+
+            .password-toggle {
+                right: 0.5rem;
+                font-size: 1rem;
+                top: calc(1.5rem + 0.5rem + 0.75rem + 0.5rem);
             }
 
             .login-button {
@@ -377,6 +428,9 @@
             <div class="form-group">
                 <label for="adminPassword">Password</label>
                 <input type="password" id="adminPassword" name="password" placeholder="Enter admin password" autocomplete="current-password" required>
+                <button type="button" class="password-toggle" id="toggleAdminPassword" aria-label="Toggle password visibility">
+                    <span id="adminPasswordToggleIcon">👁️</span>
+                </button>
             </div>
 
             <button type="submit" class="login-button" id="adminLoginButton">
@@ -395,13 +449,21 @@
 
     <script type="module">
         import { supabase } from './js/supabaseClient.js';
-        import { updateUIBasedOnAuth, setupLogout } from './js/common.js';
-        import './js/adminLogin.js';
-        
-        // Update UI based on auth state on page load
-        document.addEventListener('DOMContentLoaded', async function() {
-            await updateUIBasedOnAuth();
-            setupLogout();
+        import './js/adminlogin.js';
+
+        // Password visibility toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleAdminPassword = document.getElementById('toggleAdminPassword');
+            const adminPasswordInput = document.getElementById('adminPassword');
+            const adminPasswordToggleIcon = document.getElementById('adminPasswordToggleIcon');
+
+            if (toggleAdminPassword && adminPasswordInput) {
+                toggleAdminPassword.addEventListener('click', function() {
+                    const type = adminPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    adminPasswordInput.setAttribute('type', type);
+                    adminPasswordToggleIcon.textContent = type === 'password' ? '👁️' : '🙈';
+                });
+            }
         });
     </script>
 </body>

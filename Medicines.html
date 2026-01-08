@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canlapwas Health Hub - Medicine Availability</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background: #e8f5f2;
+        }
+
+        /* Header Styles */
+        header {
+            background: white;
+            padding: 1.25rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: inline-block;
+        }
+
+        .logo-text .can {
+            color: #2563eb;
+            text-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .logo-text .lapwas {
+            background: linear-gradient(90deg, #60a5fa 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.3));
+        }
+
+        .logo-text .health-hub {
+            color: #10b981;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #1e3a8a;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            background: #eff6ff;
+            transform: translateY(-2px);
+        }
+
+        nav a.active {
+            background: #2563eb;
+            color: white;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+        }
+
+        nav a svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Main layout */
+        .main-content {
+            padding: 3rem 2rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .title-section h1 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #2563eb 0%, #0ea5e9 35%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-section p {
+            font-size: 1.05rem;
+            color: #4b5563;
+            margin-top: 0.75rem;
+        }
+
+        .search-bar {
+            margin: 0 auto 2.5rem;
+            max-width: 680px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border-radius: 999px;
+            border: none;
+            background: white;
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.12);
+            font-size: 1rem;
+            color: #1f2937;
+            outline: none;
+        }
+
+        .search-bar svg {
+            position: absolute;
+            top: 50%;
+            left: 1.2rem;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: #94a3b8;
+        }
+
+        .medicine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            min-height: 200px;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-spinner.hidden {
+            display: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        .loading-spinner p {
+            color: #6b7280;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .medicine-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.75rem 1.5rem;
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.12);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e5e7eb;
+            opacity: 0;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .medicine-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 24px rgba(15, 118, 110, 0.18);
+        }
+
+        .medicine-card.hidden {
+            display: none;
+        }
+
+        .medicine-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .medicine-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .medicine-icon svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .medicine-details h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .medicine-details span {
+            font-size: 0.95rem;
+            color: #6b7280;
+        }
+
+        .medicine-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            background: #d1fae5;
+            color: #047857;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+        }
+
+        .quantity-info {
+            text-align: right;
+        }
+
+        .quantity-info label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            display: block;
+        }
+
+        .quantity-info span {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .reminders-section {
+            background: linear-gradient(135deg, #d1fae5 0%, #bfdbfe 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 6px 18px rgba(14, 165, 233, 0.12);
+        }
+
+        .reminders-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .reminders-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            background: rgba(16, 185, 129, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #047857;
+        }
+
+        .reminders-icon svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .reminders-header h3 {
+            font-size: 1.5rem;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .reminders-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .reminders-list li {
+            font-size: 0.98rem;
+            color: #0f172a;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .reminders-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6rem;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .title-section h1 {
+                font-size: 2.2rem;
+            }
+
+            .medicine-grid {
+                grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            }
+
+            .reminders-section {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+         <div class="logo-container">
+            <div class="logo-circle">
+                            <img src="Image/Logohub.png" alt="Health Hub Logo" onerror="this.style.display='none';">
+                        </div>
+            <div class="logo-text">
+                <span class="can">Can</span><span class="lapwas">lapwas</span> <span class="health-hub">Health Hub</span>
+            </div>
+        </div>
+        <nav>
+        <a href="Home.html" id="home-link">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Home
+        </a>
+
+        <a href="Service.html" id="service-link">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            Services
+        </a>
+
+        <a href="Medicines.html" id="medicines-link" class="active">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+            </svg>
+            Medicines
+        </a>
+        <a href="Login.html" id="auth-link">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+            </svg>
+            <span id="auth-text">Sign In</span>
+        </a>
+
+        
+    </nav>
+    </header>
+
+    <main class="main-content">
+        <section class="title-section">
+            <h1>Medicine Availability</h1>
+            <p>Check the availability of medicines and vitamins before visiting the health center.</p>
+        </section>
+
+        <div class="search-bar">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search medicines or categories....." aria-label="Search medicines or categories">
+        </div>
+
+        <section class="medicine-grid" id="medicineGrid">
+            <div id="loading-indicator" class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading medicines...</p>
+            </div>
+        </section>
+
+        <section class="reminders-section">
+            <div class="reminders-header">
+                <div class="reminders-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 3h.01M5.455 19.045A9 9 0 1119.045 5.455 9 9 0 015.455 19.045z"/>
+                    </svg>
+                </div>
+                <h3>Important Reminders</h3>
+            </div>
+            <ul class="reminders-list">
+                <li>Prescription required for certain medications</li>
+                <li>Stock levels are updated regularly but may vary</li>
+                <li>Contact the health center for specific medicine inquiries</li>
+                <li>Low stock items are restocked within 1 - 2 weeks</li>
+            </ul>
+        </section>
+    </main>
+
+    <script type="module">
+        import { getMedicines } from './js/medicinesService.js';
+        import { updateUIBasedOnAuth, setupLogout } from './js/common.js';
+        import { supabase } from './js/supabaseClient.js';
+        import { initNotificationUI } from './js/notificationUI.js';
+        
+        const searchInput = document.getElementById('searchInput');
+        const medicineGrid = document.getElementById('medicineGrid');
+
+        // Initialize medicines array
+        let medicines = [];
+        
+        // Load medicines from Supabase
+        async function loadMedicines() {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const medicineGrid = document.getElementById('medicineGrid');
+            
+            // Show loading indicator
+            if (loadingIndicator) {
+                loadingIndicator.classList.remove('hidden');
+            }
+            
+            try {
+                medicines = await getMedicines();
+                
+                // Hide loading indicator
+                if (loadingIndicator) {
+                    loadingIndicator.classList.add('hidden');
+                }
+                
+                renderMedicines();
+            } catch (error) {
+                console.error('Error loading medicines:', error);
+                
+                // Hide loading indicator on error
+                if (loadingIndicator) {
+                    loadingIndicator.classList.add('hidden');
+                }
+                
+                medicineGrid.innerHTML = '<p style="text-align:center;color:#ef4444;grid-column:1/-1;padding:2rem;">Error loading medicines. Please try again.</p>';
+            }
+        }
+
+        function getStatusInfo(quantity) {
+            return quantity <= 15 ? 'Low Stock' : 'In Stock';
+        }
+
+        function medicineCardTemplate(med) {
+            const status = getStatusInfo(med.quantity);
+            return `
+                <article class="medicine-card" data-name="${med.name}" data-category="${med.category}">
+                    <div class="medicine-header">
+                        <div class="medicine-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l4-4a4 4 0 000-5.656z"/>
+                            </svg>
+                        </div>
+                        <div class="medicine-details">
+                            <h2>${med.name}</h2>
+                            <span>${med.category}</span>
+                        </div>
+                    </div>
+                    <div class="medicine-meta">
+                        <span class="status-badge">${status}</span>
+                        <div class="quantity-info">
+                            <label>Quantity</label>
+                            <span>${med.quantity}</span>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderMedicines(medicinesList = null) {
+            const meds = medicinesList || medicines;
+            
+            if (meds.length === 0) {
+                medicineGrid.innerHTML = '<p style="text-align:center;color:#94a3b8;grid-column:1/-1;padding:2rem;">No medicines available.</p>';
+                return;
+            }
+            
+            medicineGrid.innerHTML = meds.map(medicineCardTemplate).join('');
+            
+            // Add staggered animation delay to medicine cards
+            const medicineCards = document.querySelectorAll('.medicine-card');
+            medicineCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.05}s`;
+            });
+        }
+
+        searchInput.addEventListener('input', function () {
+            const term = this.value.trim().toLowerCase();
+            const filtered = medicines.filter(med => 
+                med.name.toLowerCase().includes(term) || 
+                med.category.toLowerCase().includes(term)
+            );
+            renderMedicines(filtered);
+        });
+
+        // simple keyboard navigation highlight
+        searchInput.addEventListener('focus', () => {
+            searchInput.style.boxShadow = '0 0 0 4px rgba(14, 165, 233, 0.25)';
+        });
+
+        searchInput.addEventListener('blur', () => {
+            searchInput.style.boxShadow = '0 4px 12px rgba(15, 118, 110, 0.12)';
+        });
+
+        // Set active navigation state based on current page
+        function setActiveNavItem() {
+            const currentPage = window.location.pathname.split('/').pop() || 'Home.html';
+            const navLinks = document.querySelectorAll('nav a');
+            
+            navLinks.forEach(link => {
+                const linkHref = link.getAttribute('href');
+                if (linkHref === currentPage || 
+                    (currentPage === '' && linkHref === '#') ||
+                    (currentPage === 'Medicines.html' && linkHref === 'Medicines.html')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Add active state management for navigation
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (!this.classList.contains('active')) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Initial load from Supabase
+        document.addEventListener('DOMContentLoaded', async function() {
+            setActiveNavItem();
+            await updateUIBasedOnAuth();
+            setupLogout();
+            await loadMedicines();
+            
+            // Initialize notification UI for authenticated users
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                await initNotificationUI();
+            }
+        });
+    </script>
+</body>
+</html>

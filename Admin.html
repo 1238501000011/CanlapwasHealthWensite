@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canlapwas Health Hub - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: #1f2937;
+            background: #f1f5f9;
+            line-height: 1.5;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: white;
+            padding: 2.25rem 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.25rem;
+            box-shadow: 6px 0 20px rgba(15, 23, 42, 0.06);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .logo-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid rgba(34, 197, 94, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(15, 118, 110, 0.18);
+        }
+
+        .logo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .logo-text span:first-child {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .logo-text span:last-child {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f766e;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.75rem 0.9rem;
+            border-radius: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-link svg {
+            width: 18px;
+            height: 18px;
+            color: #1f2937;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 12px 26px rgba(37, 99, 235, 0.28);
+        }
+
+        .nav-link.active svg {
+            color: white;
+        }
+
+        .nav-link:hover {
+            transform: translateX(6px);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .nav-link:hover svg {
+            color: #2563eb;
+        }
+
+        .back-link {
+            margin-top: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #1f2937;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+        }
+
+        .back-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .back-link:hover {
+            background: #eef2ff;
+            transform: translateX(4px);
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            padding: 2.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .content-header h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2563eb 0%, #0ea5e9 40%, #0f766e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .content-header p {
+            margin-top: 0.6rem;
+            font-size: 1rem;
+            color: #475569;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.6rem;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 32px rgba(15, 23, 42, 0.14);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #0f172a;
+        }
+
+        .stat-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: #ffffff;
+        }
+
+        .stat-footer {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .stat-card.blue .stat-icon {
+            background: #2f6cf8;
+        }
+
+        .stat-card.green .stat-icon {
+            background: #16c37b;
+        }
+
+        .stat-card.amber .stat-icon {
+            background: #f5a623;
+        }
+
+        .stat-card.teal .stat-icon {
+            background: #0d8ab8;
+        }
+
+        /* Panels */
+        .panels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 22px;
+            padding: 1.85rem;
+            box-shadow: 0 12px 26px rgba(148, 163, 184, 0.14);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 1.35rem;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .panel-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: rgba(37, 99, 235, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2563eb;
+        }
+
+        .panel-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-title h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .panel-title span {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .activity-list,
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .activity-card {
+            border-radius: 16px;
+            padding: 0.85rem 1.15rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid rgba(37, 99, 235, 0.12);
+            box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
+        }
+
+        .activity-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .activity-info strong {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #1f2937;
+        }
+
+        .activity-info span {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .activity-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .indicator-blue {
+            background: #2563eb;
+        }
+
+        .indicator-green {
+            background: #10b981;
+        }
+
+        .indicator-amber {
+            background: #f59e0b;
+        }
+
+        .action-button {
+            background: white;
+            border-radius: 16px;
+            padding: 1rem 1.15rem;
+            border: 1px solid rgba(16, 185, 129, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            color: #0f172a;
+            box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.12);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.18);
+        }
+
+        .action-button span {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        @media (max-width: 1024px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1.5rem 2rem;
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .back-link {
+                margin-top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-badge">
+                    <div class="logo-circle">
+                        <img src="image/Logohub.png" alt="Health Hub Logo" onerror="this.style.display='none';">
+                    </div>
+                    <div class="logo-text">
+                        <span>Health Hub</span>
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="AdminLogin.html" class="nav-link active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 11.5L12 3l9 8.5" />
+                        <path d="M5 10.5V21h5.5v-5.5H13V21h6v-10.5" />
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="ManageSchedules.html" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 7h16" />
+                        <path d="M7 3v4" />
+                        <path d="M17 3v4" />
+                        <rect x="4" y="7" width="16" height="14" rx="2" />
+                        <path d="M8 13h3" />
+                        <path d="M13 16h3" />
+                    </svg>
+                    Manage Schedules
+                </a>
+                <a href="ManageMedicines.html" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 3h12" />
+                        <path d="M10 3v5l-4 7v3h12v-3l-4-7V3" />
+                        <path d="M8 18h8" />
+                    </svg>
+                    Manage Medicines
+            </nav>
+
+            <a href="Login.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H7" />
+                    <path d="M12 7l-5 5 5 5" />
+                </svg>
+                Back to Login
+            </a>
+        </aside>
+
+        <main class="content">
+            <header class="content-header">
+                <h1>Admin Dashboard</h1>
+                <div id="user-info" style="margin-top: 1rem; font-size: 1rem; color: #64748b;">
+                    Welcome, <span id="user-name">Admin User</span> 
+                    <button id="logout-btn" style="margin-left: 1rem; padding: 0.4rem 0.8rem; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; font-size: 0.9rem;">Logout</button>
+                </div>
+                <p>Overview of Canlapwas Health Hub operations</p>
+            </header>
+
+            <section class="stats-grid">
+                <article class="stat-card blue">
+                    <div class="stat-header">
+                        <span class="stat-title">Total Activities</span>
+                        <div class="stat-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 id="total-activities-count">0</h3>
+                    <div class="stat-footer">Total Activities</div>
+                </article>
+
+                <article class="stat-card green">
+                    <div class="stat-header">
+                        <span class="stat-title">Medicines</span>
+                        <div class="stat-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l4-4a4 4 0 000-5.656z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 id="total-medicines-count">0</h3>
+                    <div class="stat-footer">Items in inventory</div>
+                </article>
+
+                <article class="stat-card amber">
+                    <div class="stat-header">
+                        <span class="stat-title">Low Stock Items</span>
+                        <div class="stat-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v7h7M21 21v-7h-7M21 3l-6.586 6.586M3 21l6.586-6.586"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 id="low-stock-count">0</h3>
+                    <div class="stat-footer">Need Restocking</div>
+                </article>
+
+                <article class="stat-card teal">
+                    <div class="stat-header">
+                        <span class="stat-title">Community Reach</span>
+                        <div class="stat-icon">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M9 20h6"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20H2v-2a3 3 0 015.356-1.857M16 7a4 4 0 11-8 0 4 4 0 018 0"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 id="total-users-count">0</h3>
+                    <div class="stat-footer">Registered Users</div>
+                </article>
+            </section>
+
+            <section class="panels-grid">
+                <article class="panel recent-activities">
+                    <div class="panel-header">
+                    <div class="panel-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="22" height="22">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V3"/>
+                            </svg>
+                        </div>
+                        <div class="panel-title">
+                            <h2>Recent Activities</h2>
+                            <span>Latest updates to the system</span>
+                        </div>
+                    </div>
+                    <div class="activity-list">
+                        <div class="activity-card">
+                            <div class="activity-info">
+                                <strong>Service Schedule Update</strong>
+                                <span>Dental Services · 2 hours ago</span>
+                            </div>
+                            <div class="activity-indicator indicator-blue"></div>
+                        </div>
+                        <div class="activity-card">
+                            <div class="activity-info">
+                                <strong>Medicine Restock</strong>
+                                <span>Vitamin C · 4 hours ago</span>
+                            </div>
+                            <div class="activity-indicator indicator-green"></div>
+                        </div>
+                        <div class="activity-card">
+                            <div class="activity-info">
+                                <strong>Low Stock Alert</strong>
+                                <span>Ibuprofen · 2 days ago</span>
+                            </div>
+                            <div class="activity-indicator indicator-amber"></div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="panel quick-actions-panel">
+                    <div class="panel-header">
+                        <div class="panel-icon" style="background: rgba(16, 185, 129, 0.16); color: #047857;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="22" height="22">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div class="panel-title">
+                            <h2>Quick Actions</h2>
+                            <span>Common administrative tasks</span>
+                        </div>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="action-button" data-action="update-schedule">
+                            <div>
+                                Update Service Schedule
+                                <span>Modify existing schedules or add new services</span>
+                            </div>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                        <button class="action-button" data-action="add-medicine">
+                            <div>
+                                Add Medicine Stock
+                                <span>Update inventory level</span>
+                            </div>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                        <button class="action-button" data-action="view-reports">
+                            <div>
+                                View Reports
+                                <span>Generate system reports</span>
+                            </div>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </article>
+
+                <article class="panel notification-panel">
+                    <div class="panel-header">
+                        <div class="panel-icon" style="background: rgba(239, 68, 68, 0.16); color: #dc2626;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="22" height="22">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                        </div>
+                        <div class="panel-title">
+                            <h2>Send Notification</h2>
+                            <span>Notify users about updates or changes</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <label style="display: block; font-weight: 600; font-size: 0.9rem; color: #1f2937; margin-bottom: 0.5rem;">Notification Title</label>
+                            <input type="text" id="notification-title" placeholder="e.g., Service Schedule Update" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s;" />
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; font-size: 0.9rem; color: #1f2937; margin-bottom: 0.5rem;">Message</label>
+                            <textarea id="notification-message" placeholder="Enter the notification message..." rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; font-family: inherit; resize: vertical; transition: border-color 0.2s;"></textarea>
+                        </div>
+                        <button id="send-notification-btn" style="background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%); color: white; border: none; padding: 0.875rem 1.5rem; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
+                            Send to All Users
+                        </button>
+                        <div id="notification-status" style="display: none; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; font-weight: 500;"></div>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/supabaseClient.js';
+        import { sendBroadcastNotification } from './js/notificationsService.js';
+        
+        // Admin access check on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Check if admin is logged in using Supabase auth
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session || !session.user) {
+                    // Not logged in - redirect to admin login
+                    window.location.href = 'AdminLogin.html';
+                    return;
+                }
+                
+                // Check if user is admin by checking user type in our users table
+                const { data: user, error: userError } = await supabase
+                    .from('users')
+                    .select('type') 
+                    .eq('id', session.user.id)
+                    .single();
+                    
+                if (userError || !user || user.type !== 'admin') {
+                    // Not an admin - redirect to home
+                    window.location.href = 'Home.html';
+                    return;
+                }
+                
+                // Update user info display
+                await updateUserInfo();
+                
+                // Set up logout functionality
+                setupLogout();
+                
+                // Set up quick action buttons
+                setupQuickActionButtons();
+                
+                // Set up notification sending
+                setupNotificationSending();
+                
+            } catch (error) {
+                console.error('Error checking admin access:', error);
+                window.location.href = 'AdminLogin.html';
+                return;
+            }
+        });
+        
+        // Function to update user info display
+        async function updateUserInfo() {
+            try {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session || !session.user) {
+                    console.error('No active session found');
+                    return;
+                }
+                
+                // Get user details from our users table
+                const { data: user, error: userError } = await supabase
+                    .from('users')
+                    .select('name, email')
+                    .eq('id', session.user.id)
+                    .single();
+                    
+                if (userError || !user) {
+                    console.error('Error fetching user info:', userError);
+                    return;
+                }
+                
+                const userNameElement = document.getElementById('user-name');
+                if (userNameElement) {
+                    userNameElement.textContent = user.name || user.email;
+                }
+            } catch (error) {
+                console.error('Error updating user info:', error);
+            }
+        }
+        
+        // Function to set up logout functionality
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async function() {
+                    try {
+                        // Sign out from Supabase
+                        const { error } = await supabase.auth.signOut();
+                        if (error) {
+                            console.error('Error signing out:', error);
+                        }
+                        
+                        // Redirect to login page
+                        window.location.href = 'Login.html';
+                    } catch (error) {
+                        console.error('Error during logout:', error);
+                        // Redirect to login page even if there's an error
+                        window.location.href = 'Login.html';
+                    }
+                });
+            }
+        }
+        
+        // Function to set up quick action buttons
+        function setupQuickActionButtons() {
+            const quickActionButtons = document.querySelectorAll('.action-button');
+            quickActionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.getAttribute('data-action');
+                    
+                    switch(action) {
+                        case 'update-schedule':
+                            window.location.href = 'ManageSchedules.html';
+                            break;
+                        case 'add-medicine':
+                            window.location.href = 'ManageMedicines.html';
+                            break;
+                        case 'view-reports':
+                            // Placeholder for reports functionality
+                            alert('Reports functionality coming soon!');
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            });
+        }
+        
+        // Function to update stats
+        async function updateStats() {
+            try {
+                // Get total activities count (combining schedules and medicines)
+                const { count: schedulesCount, error: schedulesError } = await supabase
+                    .from('schedules')
+                    .select('*', { count: 'exact', head: true });
+                
+                const { count: medicinesCount, error: medicinesError } = await supabase
+                    .from('medicines')
+                    .select('*', { count: 'exact', head: true });
+                
+                let totalActivities = 0;
+                if (!schedulesError) totalActivities += schedulesCount || 0;
+                if (!medicinesError) totalActivities += medicinesCount || 0;
+                
+                document.getElementById('total-activities-count').textContent = totalActivities;
+                
+                // Get total medicines count
+                if (medicinesError) {
+                    console.error('Error fetching medicines count:', medicinesError);
+                } else {
+                    document.getElementById('total-medicines-count').textContent = medicinesCount || 0;
+                }
+                
+                // Get low stock items count (medicines with quantity <= 15)
+                const { count: lowStockCount, error: lowStockError } = await supabase
+                    .from('medicines')
+                    .select('*', { count: 'exact', head: true })
+                    .lte('quantity', 15);
+                
+                if (lowStockError) {
+                    console.error('Error fetching low stock count:', lowStockError);
+                } else {
+                    document.getElementById('low-stock-count').textContent = lowStockCount || 0;
+                }
+                
+                // Get total users count (Community Reach)
+                const { count: usersCount, error: usersError } = await supabase
+                    .from('users')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (usersError) {
+                    console.error('Error fetching users count:', usersError);
+                } else {
+                    document.getElementById('total-users-count').textContent = usersCount || 0;
+                    // Update the stat title to show community reach
+                    const statFooter = document.querySelector('.stat-card.teal .stat-footer');
+                    if (statFooter) {
+                        statFooter.textContent = 'Community Reach';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+        
+        // Function to update recent activities
+        async function updateRecentActivities() {
+            try {
+                // Get recent schedules
+                const { data: schedulesData, error: schedulesError } = await supabase
+                    .from('schedules')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+                
+                if (schedulesError) {
+                    console.error('Error fetching schedules:', schedulesError);
+                } else {
+                    // Update recent activities based on schedules
+                    const activityList = document.querySelector('.activity-list');
+                    if (activityList) {
+                        // Clear existing activities
+                        activityList.innerHTML = '';
+                        
+                        // Add schedule activities
+                        if (schedulesData && schedulesData.length > 0) {
+                            schedulesData.forEach(schedule => {
+                                const activityCard = document.createElement('div');
+                                activityCard.className = 'activity-card';
+                                
+                                const timeAgo = getTimeAgo(schedule.created_at);
+                                
+                                activityCard.innerHTML = `
+                                    <div class="activity-info">
+                                        <strong>Schedule Updated: ${schedule.title}</strong>
+                                        <span>${schedule.doctor} · ${timeAgo}</span>
+                                    </div>
+                                    <div class="activity-indicator indicator-blue"></div>
+                                `;
+                                activityList.appendChild(activityCard);
+                            });
+                        }
+                        
+                        // Add some medicine activities
+                        const { data: medicinesData, error: medicinesError } = await supabase
+                            .from('medicines')
+                            .select('*')
+                            .order('updated_at', { ascending: false })
+                            .limit(2);
+                        
+                        if (!medicinesError && medicinesData && medicinesData.length > 0) {
+                            medicinesData.forEach(medicine => {
+                                const activityCard = document.createElement('div');
+                                activityCard.className = 'activity-card';
+                                
+                                const timeAgo = getTimeAgo(medicine.updated_at);
+                                
+                                activityCard.innerHTML = `
+                                    <div class="activity-info">
+                                        <strong>Medicine Updated: ${medicine.name}</strong>
+                                        <span>${medicine.category} · ${timeAgo}</span>
+                                    </div>
+                                    <div class="activity-indicator indicator-green"></div>
+                                `;
+                                activityList.appendChild(activityCard);
+                            });
+                        }
+                        
+                        // Add low stock alerts
+                        const { data: lowStockData, error: lowStockError } = await supabase
+                            .from('medicines')
+                            .select('*')
+                            .lte('quantity', 15)
+                            .limit(2);
+                        
+                        if (!lowStockError && lowStockData && lowStockData.length > 0) {
+                            lowStockData.forEach(medicine => {
+                                const activityCard = document.createElement('div');
+                                activityCard.className = 'activity-card';
+                                
+                                const timeAgo = getTimeAgo(medicine.updated_at);
+                                
+                                activityCard.innerHTML = `
+                                    <div class="activity-info">
+                                        <strong>Low Stock Alert: ${medicine.name}</strong>
+                                        <span>Quantity: ${medicine.quantity} · ${timeAgo}</span>
+                                    </div>
+                                    <div class="activity-indicator indicator-amber"></div>
+                                `;
+                                activityList.appendChild(activityCard);
+                            });
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating recent activities:', error);
+            }
+        }
+        
+        // Helper function to calculate time ago
+        function getTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) {
+                return `${diffInSeconds} seconds ago`;
+            } else if (diffInSeconds < 3600) {
+                const minutes = Math.floor(diffInSeconds / 60);
+                return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            } else if (diffInSeconds < 86400) {
+                const hours = Math.floor(diffInSeconds / 3600);
+                return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            } else {
+                const days = Math.floor(diffInSeconds / 86400);
+                return `${days} day${days > 1 ? 's' : ''} ago`;
+            }
+        }
+        
+        // Initialize stats and recent activities when page loads
+        updateStats();
+        updateRecentActivities();
+        
+        // Update stats every 30 seconds to keep them current
+        setInterval(updateStats, 30000);
+        
+        // Update recent activities every 60 seconds
+        setInterval(updateRecentActivities, 60000);
+        
+        // Function to set up notification sending
+        function setupNotificationSending() {
+            const sendBtn = document.getElementById('send-notification-btn');
+            const titleInput = document.getElementById('notification-title');
+            const messageInput = document.getElementById('notification-message');
+            const statusDiv = document.getElementById('notification-status');
+            
+            if (!sendBtn || !titleInput || !messageInput) return;
+            
+            sendBtn.addEventListener('click', async function() {
+                const title = titleInput.value.trim();
+                const message = messageInput.value.trim();
+                
+                if (!title || !message) {
+                    showNotificationStatus('Please fill in both title and message.', 'error');
+                    return;
+                }
+                
+                // Disable button and show loading
+                sendBtn.disabled = true;
+                sendBtn.textContent = 'Sending...';
+                sendBtn.style.opacity = '0.7';
+                
+                try {
+                    const result = await sendBroadcastNotification(title, message);
+                    
+                    if (result.success) {
+                        showNotificationStatus('Notification sent successfully to all users!', 'success');
+                        titleInput.value = '';
+                        messageInput.value = '';
+                    } else {
+                        showNotificationStatus('Error sending notification: ' + (result.error || 'Unknown error'), 'error');
+                    }
+                } catch (error) {
+                    console.error('Error sending notification:', error);
+                    showNotificationStatus('Error sending notification. Please try again.', 'error');
+                } finally {
+                    // Re-enable button
+                    sendBtn.disabled = false;
+                    sendBtn.textContent = 'Send to All Users';
+                    sendBtn.style.opacity = '1';
+                }
+            });
+        }
+        
+        // Function to show notification status
+        function showNotificationStatus(message, type) {
+            const statusDiv = document.getElementById('notification-status');
+            if (!statusDiv) return;
+            
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = message;
+            
+            if (type === 'success') {
+                statusDiv.style.background = '#d1fae5';
+                statusDiv.style.color = '#065f46';
+                statusDiv.style.border = '1px solid #10b981';
+            } else {
+                statusDiv.style.background = '#fee2e2';
+                statusDiv.style.color = '#991b1b';
+                statusDiv.style.border = '1px solid #ef4444';
+            }
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Confirmation - Canlapwas Health Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .confirmation-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confirmation-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #10b981 100%);
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+        }
+
+        .logo-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            overflow: hidden;
+        }
+        
+        .logo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text .can {
+            color: #2563eb;
+        }
+
+        .logo-text .lapwas {
+            background: linear-gradient(90deg, #60a5fa 0%, #34d399 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text .health-hub {
+            color: #000000;
+        }
+
+        .icon-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #d1fae5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .icon-container.success {
+            background: #d1fae5;
+        }
+
+        .icon-container.error {
+            background: #fee2e2;
+        }
+
+        .icon-container svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .icon-container.success svg {
+            color: #10b981;
+        }
+
+        .icon-container.error svg {
+            color: #ef4444;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .message {
+            color: #6b7280;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .message.success {
+            color: #10b981;
+        }
+
+        .message.error {
+            color: #ef4444;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .login-button {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <div class="logo-container">
+            <div class="logo-circle">
+                <img src="Image/Logohub.png" alt="Health Hub Logo" onerror="this.style.display='none';">
+            </div>
+            <div class="logo-text">
+                <span class="can">Can</span><span class="lapwas">lapwas</span> <span class="health-hub">Health Hub</span>
+            </div>
+        </div>
+
+        <div id="loadingState">
+            <div class="spinner"></div>
+            <h1>Verifying Email...</h1>
+            <p class="message">Please wait while we verify your email address.</p>
+        </div>
+
+        <div id="successState" style="display: none;">
+            <div class="icon-container success">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h1>Email Verified Successfully!</h1>
+            <p class="message success">Your email has been verified. You may now log in.</p>
+            <a href="Login.html" class="login-button">Go to Login</a>
+        </div>
+
+        <div id="errorState" style="display: none;">
+            <div class="icon-container error">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </div>
+            <h1>Verification Failed</h1>
+            <p class="message error" id="errorMessage">Unable to verify your email. The link may be invalid or expired.</p>
+            <a href="Login.html" class="login-button">Go to Login</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/supabaseClient.js';
+
+        async function verifyEmail() {
+            const loadingState = document.getElementById('loadingState');
+            const successState = document.getElementById('successState');
+            const errorState = document.getElementById('errorState');
+            const errorMessage = document.getElementById('errorMessage');
+
+            try {
+                // Supabase automatically processes the email confirmation token from the URL hash
+                // The session is automatically created when the user clicks the confirmation link
+                // We just need to check if we have a valid session
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+                if (sessionError) {
+                    throw sessionError;
+                }
+
+                if (session && session.user) {
+                    // Check if email is confirmed
+                    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+                    if (userError) {
+                        throw userError;
+                    }
+
+                    // Verify email is confirmed
+                    if (user && (user.email_confirmed_at || user.confirmed_at)) {
+                        // Email is verified - show success
+                        loadingState.style.display = 'none';
+                        successState.style.display = 'block';
+                        
+                        // Sign out the user (they should log in manually after verification)
+                        setTimeout(async () => {
+                            await supabase.auth.signOut();
+                        }, 2000);
+                    } else {
+                        // Email not confirmed yet
+                        throw new Error('Email confirmation is still pending');
+                    }
+                } else {
+                    // No session found - check URL parameters
+                    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                    const accessToken = hashParams.get('access_token');
+                    const type = hashParams.get('type');
+
+                    if (type === 'signup' && accessToken) {
+                        // The token is in the URL, Supabase should have processed it
+                        // Wait a moment and check again
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        
+                        const { data: { session: newSession }, error: newError } = await supabase.auth.getSession();
+                        
+                        if (newError || !newSession) {
+                            throw new Error('Unable to verify email. The link may be invalid or expired.');
+                        }
+
+                        const { data: { user }, error: userError } = await supabase.auth.getUser();
+                        
+                        if (userError) {
+                            throw userError;
+                        }
+
+                        if (user && (user.email_confirmed_at || user.confirmed_at)) {
+                            loadingState.style.display = 'none';
+                            successState.style.display = 'block';
+                            
+                            setTimeout(async () => {
+                                await supabase.auth.signOut();
+                            }, 2000);
+                        } else {
+                            throw new Error('Email confirmation is still pending');
+                        }
+                    } else {
+                        throw new Error('Invalid confirmation link');
+                    }
+                }
+            } catch (error) {
+                console.error('Email verification error:', error);
+                
+                loadingState.style.display = 'none';
+                errorState.style.display = 'block';
+                
+                if (error.message) {
+                    if (error.message.includes('expired')) {
+                        errorMessage.textContent = 'This verification link has expired. Please register again or request a new confirmation email.';
+                    } else if (error.message.includes('invalid')) {
+                        errorMessage.textContent = 'This verification link is invalid. Please check your email for the correct link.';
+                    } else {
+                        errorMessage.textContent = error.message;
+                    }
+                }
+            }
+        }
+
+        // Run verification on page load
+        document.addEventListener('DOMContentLoaded', verifyEmail);
+    </script>
+</body>
+</html>
+

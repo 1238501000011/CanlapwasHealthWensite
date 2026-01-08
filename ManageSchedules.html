@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Hub Admin - Manage Schedules</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: white;
+            padding: 2.25rem 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.25rem;
+            box-shadow: 6px 0 20px rgba(15, 23, 42, 0.06);
+        }
+
+        .logo-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(15, 118, 110, 0.18);
+            overflow: hidden;
+        }
+        
+        .logo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .logo-text span:nth-child(1) {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .logo-text span:nth-child(2) {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f766e;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.75rem 0.9rem;
+            border-radius: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-link svg {
+            width: 18px;
+            height: 18px;
+            color: #1f2937;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 12px 26px rgba(37, 99, 235, 0.28);
+        }
+
+        .nav-link.active svg {
+            color: white;
+        }
+
+        .nav-link:hover {
+            transform: translateX(6px);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .nav-link:hover svg {
+            color: #2563eb;
+        }
+
+        .back-link {
+            margin-top: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #1f2937;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+        }
+
+        .back-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .back-link:hover {
+            background: #eef2ff;
+            transform: translateX(4px);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem 2.5rem;
+        }
+
+        .content-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .content-title h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .content-title p {
+            margin-top: 0.75rem;
+            font-size: 1.05rem;
+            color: #64748b;
+        }
+
+        .add-button {
+            background: #1d4ed8;
+            color: white;
+            font-weight: 600;
+            padding: 0.85rem 1.8rem;
+            border: none;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.22);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .add-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .add-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(37, 99, 235, 0.3);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: white;
+            padding: 0.85rem 1.1rem;
+            border-radius: 999px;
+            border: 1px solid #e2e8f0;
+            box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.4);
+            max-width: 420px;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-bar svg {
+            width: 20px;
+            height: 20px;
+            color: #94a3b8;
+        }
+
+        .search-bar input {
+            border: none;
+            flex: 1;
+            font-size: 1rem;
+            color: #0f172a;
+            outline: none;
+        }
+
+        .schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .schedule-card {
+            background: #ffffff;
+            border-radius: 22px;
+            border: 1px solid #e4e8f0;
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.45rem;
+            font-weight: 500;
+            color: #0f172a;
+        }
+
+        .card-subtitle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            color: #94a3b8;
+            margin-top: 0.2rem;
+        }
+
+        .card-subtitle svg {
+            width: 16px;
+            height: 16px;
+            color: #94a3b8;
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-pill {
+            background: #2367ff;
+            color: white;
+            padding: 0.3rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: lowercase;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .status-pill:hover {
+            transform: scale(1.05);
+        }
+        
+        .status-available {
+            background: #10b981;
+        }
+        
+        .status-unavailable {
+            background: #ef4444;
+        }
+
+        .icon-button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #1f2937;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .icon-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .icon-button.delete {
+            color: #ef4444;
+        }
+
+        .icon-button:hover {
+            transform: translateY(-2px);
+            color: #2563eb;
+        }
+
+        .icon-button.delete:hover {
+            color: #dc2626;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .meta-item svg {
+            width: 18px;
+            height: 18px;
+            color: #2563eb;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            z-index: 100;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 460px;
+            padding: 1.75rem;
+            box-shadow: 0 25px 50px rgba(15, 23, 42, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .modal h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .modal form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .form-group input {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 0.85rem 1rem;
+            font-size: 0.95rem;
+            color: #0f172a;
+            outline: none;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            border: none;
+            border-radius: 999px;
+            padding: 0.85rem 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-btn.save {
+            background: #1d4ed8;
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background: #edf2f7;
+            color: #1f2937;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #475569;
+        }
+
+        .meta-item svg {
+            width: 18px;
+            height: 18px;
+            color: #2563eb;
+        }
+
+        @media (max-width: 1024px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1.5rem 2rem;
+            }
+
+            .sidebar-nav {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .back-link {
+                margin-top: 0;
+            }
+
+            .main-content {
+                padding: 2rem;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .schedule-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="logo-badge">
+                <div class="logo-circle">
+                    <img src="Image/Logohub.png" alt="Health Hub Logo" onerror="this.style.display='none';">
+                </div>
+                <div class="logo-text">
+                    <span>Health Hub</span>
+                    <span>Admin</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="Admin.html" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 11.5L12 3l9 8.5" />
+                        <path d="M5 10.5V21h5.5v-5.5H13V21h6v-10.5" />
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="ManageSchedules.html" class="nav-link active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 7h16" />
+                        <path d="M7 3v4" />
+                        <path d="M17 3v4" />
+                        <rect x="4" y="7" width="16" height="14" rx="2" />
+                        <path d="M8 13h3" />
+                        <path d="M13 16h3" />
+                    </svg>
+                    Manage Schedules
+                </a>
+                <a href="ManageMedicines.html" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 3h12" />
+                        <path d="M10 3v5l-4 7v3h12v-3l-4-7V3" />
+                        <path d="M8 18h8" />
+                    </svg>
+                    Manage Medicines
+                </a>
+            </nav>
+
+            <a href="Home.html" class="back-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H7" />
+                    <path d="M12 7l-5 5 5 5" />
+                </svg>
+                Back to Website
+            </a>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <div class="content-title">
+                    <h1>Manage Schedules</h1>
+                    <p>Add, edit, or remove the service schedules</p>
+                </div>
+                <button class="add-button" id="addScheduleBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14" />
+                        <path d="M5 12h14" />
+                    </svg>
+                    Add Schedule
+                </button>
+            </div>
+
+            <div class="search-bar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search Schedules....." aria-label="Search schedules">
+            </div>
+            
+            <section class="schedule-list" id="scheduleList"></section>
+        </main>
+    </div>
+
+    <div class="modal-overlay hidden" id="scheduleModal">
+        <div class="modal">
+            <h2 id="modalTitle">Add Schedule</h2>
+            <form id="scheduleForm">
+                <input type="hidden" id="scheduleId">
+                <div class="form-group">
+                    <label for="serviceName">Service Name</label>
+                    <input type="text" id="serviceName" required placeholder="e.g. General Consultation">
+                </div>
+                <div class="form-group">
+                    <label for="doctorName">Doctor</label>
+                    <input type="text" id="doctorName" required placeholder="e.g. Dr. Arianne Sabuco">
+                </div>
+                <div class="form-group">
+                    <label for="scheduleDays">Schedule Days</label>
+                    <input type="text" id="scheduleDays" required placeholder="e.g. Monday & Tuesday">
+                </div>
+                <div class="form-group">
+                    <label for="scheduleTime">Time</label>
+                    <input type="text" id="scheduleTime" required placeholder="e.g. 8:00 - 10:00 AM">
+                </div>
+                <div class="form-group">
+                    <label for="scheduleLocation">Location</label>
+                    <input type="text" id="scheduleLocation" required placeholder="e.g. Consultation Room 1">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="modal-btn cancel" id="cancelModalBtn">Cancel</button>
+                    <button type="submit" class="modal-btn save">Save Schedule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { getSchedules, addSchedule, updateSchedule, deleteSchedule } from './js/schedulesService.js';
+        import { supabase } from './js/supabaseClient.js';
+        import { updateUIBasedOnAuth, setupLogout } from './js/common.js';
+        
+        const addScheduleBtn = document.getElementById('addScheduleBtn');
+        const scheduleList = document.getElementById('scheduleList');
+        const scheduleModal = document.getElementById('scheduleModal');
+        const scheduleForm = document.getElementById('scheduleForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const searchInput = document.getElementById('searchInput');
+        const scheduleIdField = document.getElementById('scheduleId');
+        const serviceNameField = document.getElementById('serviceName');
+        const doctorNameField = document.getElementById('doctorName');
+        const scheduleDaysField = document.getElementById('scheduleDays');
+        const scheduleTimeField = document.getElementById('scheduleTime');
+        const scheduleLocationField = document.getElementById('scheduleLocation');
+        const cancelModalBtn = document.getElementById('cancelModalBtn');
+
+        // Initialize schedules array
+        let schedules = [];
+        
+        // Load schedules from Supabase
+        async function loadSchedules() {
+            try {
+                schedules = await getSchedules();
+                renderSchedules();
+            } catch (error) {
+                console.error('Error loading schedules:', error);
+                alert('Error loading schedules. Please try again.');
+            }
+        }
+        
+        async function saveSchedules() {
+            // This function is now handled by the service functions
+            // Each operation (add, update, delete) will directly call the Supabase service
+        }
+
+        function scheduleCardTemplate(schedule) {
+            // Determine status class
+            const statusClass = schedule.status === 'Available' ? 'status-available' : 'status-unavailable';
+            
+            return `
+                <article class="schedule-card" data-id="${schedule.id}">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">${schedule.title}</h2>
+                            <p class="card-subtitle">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 11a3 3 0 100-6 3 3 0 000 6z" />
+                                    <path d="M19 21v-1a4 4 0 00-4-4H9a4 4 0 00-4 4v1" />
+                                </svg>
+                                <span>${schedule.doctor}</span>
+                            </p>
+                        </div>
+                        <div class="card-actions">
+                            <button class="status-pill toggle-status ${statusClass}" data-status="${schedule.status}">${schedule.status}</button>
+                            <button class="icon-button edit" data-action="edit" title="Edit schedule">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16.862 3.487a2.11 2.11 0 112.98 2.98L6.5 19.81 3 21l1.19-3.5 12.672-13.013z" />
+                                </svg>
+                            </button>
+                            <button class="icon-button delete" data-action="delete" title="Delete schedule">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 7L18 20.5a2 2 0 01-2 1.5H8a2 2 0 01-2-1.5L5 7" />
+                                    <path d="M10 11v6" />
+                                    <path d="M14 11v6" />
+                                    <path d="M4 7h16" />
+                                    <path d="M9 4h6l1 3H8l1-3z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 7h16" />
+                                <path d="M7 3v4" />
+                                <path d="M17 3v4" />
+                                <rect x="4" y="7" width="16" height="14" rx="2" />
+                            </svg>
+                            <span>${schedule.days}</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M12 7v5l3 3" />
+                            </svg>
+                            <span>${schedule.time}</span>
+                        </div>
+                        <div class="meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 21s6-4.35 6-10a6 6 0 10-12 0c0 5.65 6 10 6 10z" />
+                                <circle cx="12" cy="11" r="2" />
+                            </svg>
+                            <span>${schedule.location}</span>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderSchedules(list = schedules) {
+            scheduleList.innerHTML = list.map(scheduleCardTemplate).join('');
+            if (!list.length) {
+                scheduleList.innerHTML = '<p style="color:#94a3b8;text-align:center;">No schedules available.</p>';
+            }
+        }
+
+        function openModal(mode, schedule = null) {
+            scheduleModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            if (mode === 'edit' && schedule) {
+                modalTitle.textContent = 'Edit Schedule';
+                scheduleIdField.value = schedule.id;
+                serviceNameField.value = schedule.title;
+                doctorNameField.value = schedule.doctor;
+                scheduleDaysField.value = schedule.days;
+                scheduleTimeField.value = schedule.time;
+                scheduleLocationField.value = schedule.location;
+            } else {
+                modalTitle.textContent = 'Add Schedule';
+                scheduleIdField.value = '';
+                scheduleForm.reset();
+            }
+            serviceNameField.focus();
+        }
+
+        function closeModal() {
+            scheduleModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        addScheduleBtn.addEventListener('click', () => openModal('add'));
+        cancelModalBtn.addEventListener('click', closeModal);
+        
+        searchInput.addEventListener('input', function () {
+            const term = this.value.trim().toLowerCase();
+            const filtered = schedules.filter(
+                schedule =>
+                    schedule.title.toLowerCase().includes(term) ||
+                    schedule.doctor.toLowerCase().includes(term) ||
+                    schedule.days.toLowerCase().includes(term) ||
+                    schedule.time.toLowerCase().includes(term) ||
+                    schedule.location.toLowerCase().includes(term)
+            );
+            renderSchedules(filtered);
+        });
+
+        scheduleForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            const idValue = scheduleIdField.value;
+            const title = serviceNameField.value.trim();
+            const doctor = doctorNameField.value.trim();
+            const days = scheduleDaysField.value.trim();
+            const time = scheduleTimeField.value.trim();
+            const location = scheduleLocationField.value.trim();
+            if (!title || !doctor || !days || !time || !location) {
+                return;
+            }
+
+            try {
+                if (idValue) {
+                    // Update existing schedule
+                    const result = await updateSchedule(idValue, {
+                        title: title,
+                        doctor: doctor,
+                        days: days,
+                        time: time,
+                        location: location
+                    });
+                    
+                    if (result) {
+                        // Find and update the schedule in the local array
+                        const index = schedules.findIndex(item => item.id === idValue);
+                        if (index !== -1) {
+                            schedules[index] = result;
+                        }
+                        alert('Schedule updated successfully!');
+                    } else {
+                        alert('Error updating schedule. Please try again.');
+                        return;
+                    }
+                } else {
+                    // Add new schedule
+                    const newSchedule = await addSchedule({
+                        title: title,
+                        doctor: doctor,
+                        days: days,
+                        time: time,
+                        location: location,
+                        status: 'Available'
+                    });
+                    
+                    if (newSchedule) {
+                        schedules.push(newSchedule);
+                        alert('Schedule added successfully!');
+                    } else {
+                        alert('Error adding schedule. Please try again.');
+                        return;
+                    }
+                }
+                
+                // Refresh the schedule list
+                renderSchedules();
+                closeModal();
+            } catch (error) {
+                console.error('Error saving schedule:', error);
+                alert('Error saving schedule. Please try again.');
+            }
+        });
+
+        scheduleList.addEventListener('click', async (event) => {
+            // Handle status toggle button
+            const statusBtn = event.target.closest('.toggle-status');
+            if (statusBtn) {
+                const card = statusBtn.closest('.schedule-card');
+                const scheduleId = card.dataset.id;
+                const schedule = schedules.find(item => item.id === scheduleId);
+                if (!schedule) return;
+                
+                // Toggle status
+                const newStatus = schedule.status === 'Available' ? 'Unavailable' : 'Available';
+                
+                try {
+                    const result = await updateSchedule(scheduleId, { status: newStatus });
+                    if (result) {
+                        // Update the schedule in the local array
+                        const index = schedules.findIndex(item => item.id === scheduleId);
+                        if (index !== -1) {
+                            schedules[index] = result;
+                        }
+                        
+                        // Update the status button
+                        statusBtn.textContent = result.status;
+                        statusBtn.dataset.status = result.status;
+                        
+                        // Update the button class based on status
+                        statusBtn.className = 'status-pill toggle-status';
+                        if (result.status === 'Available') {
+                            statusBtn.classList.add('status-available');
+                        } else {
+                            statusBtn.classList.add('status-unavailable');
+                        }
+                    } else {
+                        alert('Error updating schedule status. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error updating schedule status:', error);
+                    alert('Error updating schedule status. Please try again.');
+                }
+                return;
+            }
+            
+            // Handle icon buttons
+            const button = event.target.closest('.icon-button');
+            if (!button) return;
+            const card = button.closest('.schedule-card');
+            const scheduleId = card.dataset.id;
+            const schedule = schedules.find(item => item.id === scheduleId);
+            if (!schedule) return;
+            const action = button.dataset.action;
+            button.style.transform = 'translateY(-2px) scale(1.04)';
+            setTimeout(() => (button.style.transform = ''), 200);
+
+            if (action === 'edit') {
+                openModal('edit', schedule);
+                return;
+            }
+
+            if (action === 'delete') {
+                if (!window.confirm(`Delete ${schedule.title}?`)) return;
+                try {
+                    const success = await deleteSchedule(scheduleId);
+                    if (success) {
+                        // Remove from local array
+                        const index = schedules.findIndex(item => item.id === scheduleId);
+                        if (index !== -1) {
+                            schedules.splice(index, 1);
+                        }
+                        renderSchedules();
+                        alert('Schedule deleted successfully!');
+                    } else {
+                        alert('Error deleting schedule. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error deleting schedule:', error);
+                    alert('Error deleting schedule. Please try again.');
+                }
+            }
+        });
+
+        // Check admin access and load schedules when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Check if admin is logged in using Supabase auth
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session || !session.user) {
+                    // Not logged in - redirect to admin login
+                    window.location.href = 'AdminLogin.html';
+                    return;
+                }
+                
+                // Check if user is admin by checking user type in our users table
+                const { data: user, error: userError } = await supabase
+                    .from('users')
+                    .select('type') 
+                    .eq('id', session.user.id)
+                    .single();
+                
+                if (userError || !user || user.type !== 'admin') {
+                    // Not an admin - redirect to home
+                    window.location.href = 'Home.html';
+                    return;
+                }
+                
+                // Update UI based on auth state
+                await updateUIBasedOnAuth();
+                setupLogout();
+                
+                await loadSchedules();
+            } catch (error) {
+                console.error('Error checking admin access:', error);
+                window.location.href = 'AdminLogin.html';
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -901,6 +901,11 @@
                     newQuantity = Math.max(0, medicine.quantity - 1); // Prevent negative quantities
                 }
                 
+                // Ask for confirmation before updating quantity
+                const confirmMessage = `${action === 'increase' ? 'Increase' : 'Decrease'} quantity for ${medicine.name} from ${medicine.quantity} to ${newQuantity}?`;
+                
+                if (!window.confirm(confirmMessage)) return;
+                
                 try {
                     const result = await updateMedicine(medId, { quantity: newQuantity });
                     if (result) {

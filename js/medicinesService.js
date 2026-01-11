@@ -1,5 +1,6 @@
 // Medicines Service using Supabase
 import { supabase } from './supabaseClient.js';
+import { sendBroadcastNotification } from './notificationsService.js';
 
 // Function to get all medicines from Supabase
 export async function getMedicines() {
@@ -35,6 +36,18 @@ export async function addMedicine(medicine) {
         }
 
         const addedMedicine = data && data[0] ? data[0] : null;
+        
+        // Send notification about new medicine
+        if (addedMedicine) {
+            try {
+                await sendBroadcastNotification(
+                    'New Medicine Added', 
+                    `A new medicine "${addedMedicine.name}" has been added to the inventory.`
+                );
+            } catch (notificationError) {
+                console.error('Error sending notification for new medicine:', notificationError);
+            }
+        }
         
         return addedMedicine;
     } catch (error) {
@@ -102,7 +115,18 @@ export async function deleteMedicine(id) {
             return false;
         }
         
-
+        // Send notification about deleted medicine
+        if (deletedMedicine) {
+            try {
+                await sendBroadcastNotification(
+                    'Medicine Removed', 
+                    `The medicine "${deletedMedicine.name}" has been removed from the inventory.`
+                );
+            } catch (notificationError) {
+                console.error('Error sending notification for deleted medicine:', notificationError);
+            }
+        }
+        
         return true;
     } catch (error) {
         console.error('Unexpected error deleting medicine:', error);

@@ -1,5 +1,6 @@
 // Schedules Service using Supabase
 import { supabase } from './supabaseClient.js';
+import { sendBroadcastNotification } from './notificationsService.js';
 
 // Function to get all schedules from Supabase
 export async function getSchedules() {
@@ -36,6 +37,18 @@ export async function addSchedule(schedule) {
 
         const addedSchedule = data && data[0] ? data[0] : null;
         
+        // Send notification about new schedule
+        if (addedSchedule) {
+            try {
+                await sendBroadcastNotification(
+                    'New Schedule Added', 
+                    `A new schedule "${addedSchedule.title}" with ${addedSchedule.doctor} has been added.`
+                );
+            } catch (notificationError) {
+                console.error('Error sending notification for new schedule:', notificationError);
+            }
+        }
+        
         return addedSchedule;
     } catch (error) {
         console.error('Unexpected error adding schedule:', error);
@@ -71,6 +84,28 @@ export async function updateSchedule(id, updates) {
 
         const updatedSchedule = data && data[0] ? data[0] : null;
         
+        // Check if status changed and send notification if it did
+        if (updatedSchedule && originalSchedule && originalSchedule.status !== updatedSchedule.status) {
+            try {
+                const notificationMessage = `The schedule "${updatedSchedule.title}" with ${updatedSchedule.doctor} is now ${updatedSchedule.status.toLowerCase()}.`;
+                
+                await sendBroadcastNotification(
+                    'Schedule Status Updated', 
+                    notificationMessage
+                );
+                
+                // Send a specific notification if the schedule became unavailable
+                if (updatedSchedule.status === 'Unavailable') {
+                    await sendBroadcastNotification(
+                        'Service Unavailable', 
+                        `Important: The service "${updatedSchedule.title}" with ${updatedSchedule.doctor} is now unavailable.`
+                    );
+                }
+            } catch (notificationError) {
+                console.error('Error sending notification for updated schedule:', notificationError);
+            }
+        }
+        
         return updatedSchedule;
     } catch (error) {
         console.error('Unexpected error updating schedule:', error);
@@ -102,7 +137,18 @@ export async function deleteSchedule(id) {
             return false;
         }
         
-
+        // Send notification about deleted schedule
+        if (deletedSchedule) {
+            try {
+                await sendBroadcastNotification(
+                    'Schedule Removed', 
+                    `The schedule "${deletedSchedule.title}" with ${deletedSchedule.doctor} has been removed.`
+                );
+            } catch (notificationError) {
+                console.error('Error sending notification for deleted schedule:', notificationError);
+            }
+        }
+        
         return true;
     } catch (error) {
         console.error('Unexpected error deleting schedule:', error);

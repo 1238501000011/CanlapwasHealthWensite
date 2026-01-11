@@ -883,6 +883,11 @@
                 // Toggle status
                 const newStatus = schedule.status === 'Available' ? 'Unavailable' : 'Available';
                 
+                // Ask for confirmation before changing status
+                const confirmMessage = `Change schedule status for "${schedule.title}" from ${schedule.status} to ${newStatus}?`;
+                
+                if (!window.confirm(confirmMessage)) return;
+                
                 try {
                     const result = await updateSchedule(scheduleId, { status: newStatus });
                     if (result) {

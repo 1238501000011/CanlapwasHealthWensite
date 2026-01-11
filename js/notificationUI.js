@@ -40,7 +40,8 @@ export async function initNotificationUI() {
  */
 function createNotificationIcon() {
   const nav = document.querySelector('nav');
-  if (!nav) return;
+  const header = document.querySelector('header');
+  if (!nav || !header) return;
   
   // Check if notification icon already exists
   if (document.getElementById('notification-icon-container')) return;
@@ -82,12 +83,34 @@ function createNotificationIcon() {
   iconContainer.appendChild(notificationIcon);
   iconContainer.appendChild(notificationBadge);
   
-  // Insert before auth link
-  const authLink = document.getElementById('auth-link');
-  if (authLink && authLink.parentNode) {
-    authLink.parentNode.insertBefore(iconContainer, authLink);
+  // Check if we're in mobile view (by checking if nav is hidden or collapsed)
+  const isMobile = window.innerWidth <= 768;
+  
+  if (isMobile) {
+    // On mobile: Insert after the logo container and before the mobile menu toggle
+    const logoContainer = header.querySelector('.logo-container');
+    const mobileMenuToggle = header.querySelector('.mobile-menu-toggle');
+    
+    if (logoContainer && mobileMenuToggle) {
+      // Insert between logo and mobile menu toggle
+      header.insertBefore(iconContainer, mobileMenuToggle);
+    } else {
+      // Fallback: Insert in nav if we can't find proper placement
+      const authLink = document.getElementById('auth-link');
+      if (authLink && authLink.parentNode) {
+        authLink.parentNode.insertBefore(iconContainer, authLink);
+      } else {
+        nav.appendChild(iconContainer);
+      }
+    }
   } else {
-    nav.appendChild(iconContainer);
+    // On desktop: Insert in nav before auth link (traditional position)
+    const authLink = document.getElementById('auth-link');
+    if (authLink && authLink.parentNode) {
+      authLink.parentNode.insertBefore(iconContainer, authLink);
+    } else {
+      nav.appendChild(iconContainer);
+    }
   }
   
   // Add click handler
@@ -95,6 +118,49 @@ function createNotificationIcon() {
   
   // Create notification panel
   createNotificationPanel();
+  
+  // Add resize handler to move icon between positions on viewport changes
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      moveNotificationIconBasedOnViewport(nav, header, iconContainer);
+    }, 250);
+  });
+}
+
+/**
+ * Move notification icon based on viewport size
+ */
+function moveNotificationIconBasedOnViewport(nav, header, iconContainer) {
+  const isMobile = window.innerWidth <= 768;
+  
+  if (isMobile) {
+    // On mobile: Move to header between logo and mobile menu toggle
+    const logoContainer = header.querySelector('.logo-container');
+    const mobileMenuToggle = header.querySelector('.mobile-menu-toggle');
+    
+    if (logoContainer && mobileMenuToggle) {
+      // Check if already in correct position
+      const nextSibling = iconContainer.nextElementSibling;
+      if (nextSibling !== mobileMenuToggle) {
+        header.insertBefore(iconContainer, mobileMenuToggle);
+      }
+    }
+  } else {
+    // On desktop: Move to nav before auth link
+    const authLink = document.getElementById('auth-link');
+    if (authLink && authLink.parentNode && authLink.parentNode.contains(iconContainer)) {
+      // Already in nav, check position
+      const nextSibling = iconContainer.nextElementSibling;
+      if (nextSibling !== authLink) {
+        authLink.parentNode.insertBefore(iconContainer, authLink);
+      }
+    } else if (authLink && authLink.parentNode) {
+      // Move from header to nav
+      authLink.parentNode.insertBefore(iconContainer, authLink);
+    }
+  }
 }
 
 /**
@@ -134,7 +200,7 @@ function createNotificationPanel() {
       }
       
       #notification-icon-container {
-        margin-left: 0.5rem !important;
+        margin-left: 1rem !important;
       }
       
       #notification-icon-container svg {
@@ -151,6 +217,16 @@ function createNotificationPanel() {
         max-width: calc(100vw - 10px) !important;
         border-radius: 8px !important;
       }
+      
+      #notification-icon-container {
+        margin-left: 0.5rem !important;
+      }
+    }
+    
+    /* Ensure notification icon is always visible in header */
+    #notification-icon-container {
+      display: flex;
+      align-items: center;
     }
   `;
   document.head.appendChild(style);
